@@ -6,11 +6,13 @@
 /*   By: ddavlety <ddavlety@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 16:48:57 by ddavlety          #+#    #+#             */
-/*   Updated: 2024/01/05 20:35:16 by ddavlety         ###   ########.fr       */
+/*   Updated: 2024/01/05 22:01:10 by ddavlety         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
+
+static
 
 void	signal_int(int signum)
 {
