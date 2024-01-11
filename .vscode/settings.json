@@ -3,6 +3,9 @@
 		"unistd.h": "c",
 		"limits.h": "c",
 		"signal.h": "c",
-		"libft.h": "c"
+		"libft.h": "c",
+		"server.h": "c",
+		"sigaction.h": "c",
+		"stdio.h": "c"
 	}
 }
