@@ -6,116 +6,91 @@
 /*   By: ddavlety <ddavlety@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 16:48:57 by ddavlety          #+#    #+#             */
-/*   Updated: 2024/01/11 20:29:17 by ddavlety         ###   ########.fr       */
+/*   Updated: 2024/01/14 15:07:03 by ddavlety         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-void	free_exit(char *s1, char *s2)
+char	*add_char(char *str, char c)
 {
-	if (s1)
-		free(s1);
-	if (!s2)
+	char	*ptr;
+
+	ptr = (char *)malloc((ft_strlen(str) + 2) * sizeof(char));
+	if (!ptr)
+	{
+		free(str);
+		return (NULL);
+	}
+	ft_strlcpy(ptr, str, ft_strlen(str) + 1);
+	ft_strlcat(ptr, &c, ft_strlen(str) + 2);
+	ptr[ft_strlen(str) + 1] = '\0';
+	free(str);
+	return (ptr);
+}
+
+void	clean(char **s)
+{
+	if (s)
+	{
+		free(*s);
+		*s = NULL;
+	}
+}
+
+void	add_letter(char **message, char *bits, int *bit)
+{
+	if (!*message)
+		*message = ft_strdup("");
+	if (!*message)
 	{
 		ft_putendl_fd("Error", 2);
 		exit(1);
 	}
+	*message = add_char(*message, ft_atoi_binar(bits, ft_strlen(bits)));
+	if (!*message)
+	{
+		ft_putendl_fd("Error", 2);
+		exit(1);
+	}
+	ft_bzero(bits, 8);
+	*bit = 0;
 }
 
-char	letter(char *bits)
-{
-	char	letter;
-
-	letter = ft_atoi_binar(bits, ft_strlen(bits));
-	// ft_putchar_fd(letter, 1);
-	return (letter);
-}
-
-char	*msg(char *msg, char letter)
-{
-	char	*tmp;
-
-	if (!msg)
-		msg = ft_strdup("");
-	free_exit(NULL, msg);
-	tmp = msg;
-	msg = ft_strjoin(msg, &letter);
-	free(tmp);
-	return (msg);
-}
-
-void	clean(char *s)
-{
-	ft_bzero(s, ft_strlen(s));
-	free(s);
-}
-
-void	signal_user(int signum)
+void	sigusr_handler(int signo, siginfo_t *info, void *context)
 {
 	static char	*message;
 	static int	bit;
-	static char	*bits;
-	char		*tmp;
+	static char	bits[9];
 
-	if (!bits)
-		bits = ft_strdup("");
-	free_exit(NULL, bits);
-	tmp = bits;
-	if (signum == SIGUSR2 || signum == SIGUSR1)
-		bit++;
-	if (signum == SIGUSR2)
-		bits = ft_strjoin(tmp, "1");
-	if (signum == SIGUSR1)
-		bits = ft_strjoin(tmp, "0");
-	free_exit(tmp, bits);
+	(void)context;
+	bits[8] = 0;
+	if (signo == SIGUSR2)
+		bits[bit++] = '1';
+	if (signo == SIGUSR1)
+		bits[bit++] = '0';
 	if (bit == 8)
+		add_letter(&message, bits, &bit);
+	if (message && message[ft_strlen(message) - 1] == 4)
 	{
-		message = msg(message, letter (bits));
-		free
-		ft_bzero(bits, 8);
-		bit = 0;
+		ft_printf("%s", message);
+		clean(&message);
+		kill(info->si_pid, SIGUSR1);
 	}
-	if (message)
-		ft_printf("%s\n", message);
 }
-
-// char swap_bits(char *bits)
-// {
-// 	char	*new_bits;
-// 	int		i;
-// 	int		j;
-
-// 	i = 0;
-// 	j = sizeof(bits);
-// 	new_bits = (char *)calloc(sizeof(bits), 1);
-// 	if (!new_bits)
-// 		error_exit(bits);
-// 	new_bits[j--] = "\0"
-// 	while(bits[i])
-// 	{
-// 		new_bits[j--] = bits[i--];
-// 	}
-// }
-
-// char	*string()
-// {
-
-// }
 
 int	main(void)
 {
 	struct sigaction	sa;
 
-	sa.sa_handler = &signal_user;
-	sa.sa_flags = SA_RESTART;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = sigusr_handler;
+	sigemptyset(&sa.sa_mask);
 	if (sigaction(SIGUSR1, &sa, NULL) == -1)
-		;
+		ft_printf("Error recieving SIGUSR1");
 	if (sigaction(SIGUSR2, &sa, NULL) == -1)
-		;
+		ft_printf("Error recieving SIGUSR2");
 	ft_printf("%i\n", getpid());
-
-
 	while (1)
 		usleep(1);
 	return (0);

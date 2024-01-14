@@ -5,12 +5,25 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Debug",
+			"name": "Server",
             "type": "cppdbg",
             "request": "launch",
             // "program": "${workspaceFolder}/client_files/client",
 			"program": "${workspaceFolder}/server_files/server",
 			"args": ["15596", "t"],
+			"cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            // "MIMode": "lldb",
+			"MIMode": "gdb",
+            // "miDebuggerPath": "lldb"
+        },
+		{
+			"name": "Client",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/client_files/client",
+			// "program": "${workspaceFolder}/server_files/server",
+			"args": ["11038", "t"],
 			"cwd": "${workspaceFolder}",
             "externalConsole": false,
             // "MIMode": "lldb",
